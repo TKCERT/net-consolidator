@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+# Network
+netaddr = "==0.8.0"
+# Command Line
+argparse = "==1.4.0"
+
+[requires]
+python_version = "3.7"
+
+[dev-packages]
+# Testing
+pytest = "==5.0.1"
+coverage = "==4.5.3"
