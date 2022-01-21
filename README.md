@@ -26,6 +26,10 @@ Split given IP ranges in equally sized slices (e.g. 10 times 500 IP addresses)
 
 ```EXAMPLE: --fileIpAddresses <text_file_with_ip_addresses> --splitIpRangeInSlices 10```
 
+Compare IP ranges by identifying matches of IP list A (fileIpAddresses) in IP list B (fileIpSubtracts)
+
+```EXAMPLE: --fileIpAddresses <text_file_with_ip_addresses> --fileIpSubtracts --compareIpRanges True```
+
 # Parameters
 ```
   -h, --help            show this help message and exit
@@ -39,4 +43,6 @@ Split given IP ranges in equally sized slices (e.g. 10 times 500 IP addresses)
                         (optional) size of the network in CIDR (e.g. 24 for /24) for plausibility checks
   -t SPLITIPRANGEINSLICES, --splitIpRangeInSlices SPLITIPRANGEINSLICES
                         (optional) split IP networks in equally sized slices (e.g. 10 times 500 IP addresses
+  -c COMPAREIPRANGES, --compareIpRanges COMPAREIPRANGES
+                        (optional) mode to compare the IP files by identifying matches from flag -f in flag -s
 ```
