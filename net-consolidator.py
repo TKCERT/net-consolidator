@@ -43,6 +43,9 @@ Following examples are given for specific scenarios:
 
 * Split given IP ranges in equally sized slices (e.g. 10 times 500 IP addresses)
   EXAMPLE: --fileIpAddresses <text_file_with_ip_addresses> --splitIpRangeInSlices 10
+  
+* Compare IP ranges by identifying matches of IP list A (fileIpAddresses) in IP list B (fileIpSubtracts)
+  EXAMPLE: --fileIpAddresses <text_file_with_ip_addresses> --fileIpSubtracts --compareIpRanges True
 
 PARAMETER
 ---------
@@ -55,6 +58,7 @@ parser.add_argument('-s', '--fileIpSubtracts', help='(optional) text file with i
 parser.add_argument('-p', '--plausibilityChecks', help='(optional) enable plausibility checks (e.g. subnet size)')
 parser.add_argument('-n', '--subnetSize', help='(optional) size of the network in CIDR (e.g. 24 for /24) for plausibility checks')
 parser.add_argument('-t', '--splitIpRangeInSlices', help='(optional) split IP networks in equally sized slices (e.g. 10 times 500 IP addresses')
+parser.add_argument('-c', '--compareIpRanges', help='(optional) mode to compare the IP files by identifying matches from flag -f in flag -s')
 args = parser.parse_args()
 
 # check: parameter fileIpAddresses is a file
@@ -182,7 +186,7 @@ def checkIpOnPlausibility( ip ):
 # Subtract IP ranges for delta between IP network A and B
 #########################################################
 def subtractIpRanges( fileIpAddr, fileIpSub ):
-    """ 
+    """
     @type  fileIpAddr:  String
     @param fileIpAddr:  Filename of a file with IP addresses
     @type  fileIpSub:   String
@@ -192,12 +196,33 @@ def subtractIpRanges( fileIpAddr, fileIpSub ):
     """
     # parse the files for IP addresses
     ip_list_unscanned = readIpFile ( fileIpAddr )
-    ip_list_scanned = readIpFile ( fileIpSub )	
+    ip_list_scanned = readIpFile ( fileIpSub )
     # Subtract the ip lists
     ip_list_toscan = ip_list_unscanned - ip_list_scanned
     # Merge the result ip list
     ip_list_toscan_merge = cidr_merge(ip_list_toscan)
     return ip_list_toscan_merge
+
+# Compare IP ranges 
+#########################################################
+def compareIpRanges( fileIpA, fileIpB ):
+    """ 
+    @type  fileIpA:  	String
+    @param fileIpA:  	Filename of a file with IP addresses
+    @type  fileIpB:   	String
+    @param fileIpB:   	Filename of a file with IP addresses
+    @rtype:             IPSet()
+    @return:            List of IP ranges
+    """
+    # parse the files for IP addresses
+    ip_list_A = readIpFile ( fileIpA )
+    ip_list_B = readIpFile ( fileIpB )	
+    # Identify matches of list A in list B
+    compare_result = []
+    for ip in ip_list_A:
+        if ip in ip_list_B:
+            compare_result.append(ip)
+    return compare_result
 
 # Split IP ranges into slices each of the same size
 #####################################################
@@ -257,14 +282,14 @@ def splitIpRanges( numberOfSlices, ip_list ):
 # Main
 ######
 
-# Case: Substracting IP ranges in file2 from file1
-if args.fileIpSubtracts:
-  ip_list = subtractIpRanges(fileIpAddr, fileIpSub)
+# Case: Compare IP ranges in file2 from file1
+if args.compareIpRanges:
+  ip_list = compareIpRanges(fileIpAddr, fileIpSub)
 
   # Check plausibility
   if args.plausibilityChecks:
     for ip in ip_list:
-      if not ( checkIpOnPlausibility( '%s' % ip )): 
+      if not ( checkIpOnPlausibility( '%s' % ip )):
         print ("[*] IP list did not pass the plausibility checks ...")
         exit()
 
@@ -277,6 +302,26 @@ if args.fileIpSubtracts:
         print('%s' % ip)
   exit()
 
+
+# Case: Substracting IP ranges in file2 from file1
+if args.fileIpSubtracts:
+  ip_list = subtractIpRanges(fileIpAddr, fileIpSub)
+
+  # Check plausibility
+  if args.plausibilityChecks:
+    for ip in ip_list:
+      if not ( checkIpOnPlausibility( '%s' % ip )):
+        print ("[*] IP list did not pass the plausibility checks ...")
+        exit()
+
+  if args.splitIpRangeInSlices:
+    splitIpRanges( args.splitIpRangeInSlices, ip_list )
+
+  if not args.splitIpRangeInSlices:
+    # Print result list
+    for ip in ip_list:
+        print('%s' % ip)
+  exit()
 
 # Case: Only Merging IP ranges
 elif args.fileIpAddresses:
