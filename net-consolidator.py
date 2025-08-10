@@ -8,7 +8,7 @@ from argparse import RawTextHelpFormatter
 
 # Parse command line options
 ############################
-description="""
+description=r"""
 
  _   _      _         ____                      _ _     _       _             
 | \ | | ___| |_      / ___|___  _ __  ___  ___ | (_) __| | __ _| |_ ___  _ __ 
@@ -128,10 +128,10 @@ def getValidIpObject( line_with_ip ):
     # Regexp definitions for parsing the ip address from a string representation
     # source: https://www.regular-expressions.info/ip.html and modified to ip-ip
     # regexp for case 192.168.0.1/24 | 192.168.0.1/8 | 192.168.0.1
-    regexp_ip = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:|/[0-9]{1,2})[ |]*$')
+    regexp_ip = re.compile(r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:|/[0-9]{1,2})[ |]*$')
     # regexp for case 192.168.1.1-192.168.1.255
-    regexp_ip_range = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)( *)-( *|)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(|.*)$',re.DOTALL)
-    regexp_ip_separate = re.compile('(.*)-(.*)',re.DOTALL)
+    regexp_ip_range = re.compile(r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)( *)-( *|)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(|.*)$',re.DOTALL)
+    regexp_ip_separate = re.compile(r'(.*)-(.*)',re.DOTALL)
 
     # Check: normal ip (192.168.1.1/24, 192.168.1.1)
     if regexp_ip.match ( line_with_ip ):
@@ -165,7 +165,7 @@ def checkIpOnPlausibility( ip ):
     @return:        If the IP passed the plausibility checks (passed, not passed) 
     """
     # check for parameter subnetsize
-    regexp_ip_subnet_check = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:|/([0-9]{1,2}))[ |]*$')
+    regexp_ip_subnet_check = re.compile(r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:|/([0-9]{1,2}))[ |]*$')
     if args.subnetSize:
         subnetSize = int(args.subnetSize)
     else:
